@@ -118,8 +118,8 @@ export default class FortranTranslator {
         // [abc0-9A-Z]
         let characterClass = [];
         const set = node.chars
-            .filter((char) => typeof char === 'string')
-            .map((char) => `'${char}'`);
+            .filter((char) => char instanceof CST.literalRango)
+            .map((char) => `'${char.contenido}'`);
         const ranges = node.chars
             .filter((char) => char instanceof CST.Rango)
             .map((range) => range.accept(this));
@@ -138,6 +138,19 @@ export default class FortranTranslator {
     visitRango(node) {
         return `acceptRange('${node.bottom}', '${node.top}')`;
     }
+
+    /**
+     * @param {CST.literalRango} node
+     * @this {Visitor}
+     */
+    visitliteralRango(node) {
+        return node.contenido.accept(this);
+    }
+
+
+
+
+
     /**
      * @param {CST.Identificador} node
      * @this {Visitor}
