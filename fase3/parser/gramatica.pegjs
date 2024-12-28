@@ -17,6 +17,7 @@ gramatica
     if (noEncontrados.length > 0) {
         errores.push(new ErrorReglas("Regla no encontrada: " + noEncontrados[0]));
     }
+    prods[0].start = true;
     return prods;
   }
 
@@ -48,25 +49,23 @@ varios = ("!"(!".") /"$"/"@"/"&")
 expresiones
   = id:identificador {
     usos.push(id);
-    return new n.idRel(id);
+    return new n.Identificador(id);
   }
   / val:$literales isCase:"i"? {
     return new n.String(val.replace(/['"]/g, ''), isCase);
   }
-  / "(" _ opciones:opciones _ ")"{
-    return new n.grupo(opciones);
-  }
+  / "(" _ @opciones _ ")"
 
-  / exprs:corchetes isCase:"i"?{
+  / chars:clase  isCase:"i"?{
     //console.log("Corchetes", exprs);
-    return new n.Corchetes(exprs, isCase);
+    return new n.Clase(chars, isCase);
 
   }
   / "." {
-    return new n.Any(true);
+    return new n.Punto();
   }
   / "!."{
-    return new n.finCadena();
+    return new n.Fin();
   }
 
 // conteo = "|" parteconteo _ (_ delimitador )? _ "|"
@@ -83,15 +82,13 @@ conteo = "|" _ (numero / id:identificador) _ "|"
 // delimitador =  "," _ expresion
 
 // Regla principal que analiza corchetes con contenido
-corchetes
-    = "[" contenido:(rango / contenido)+ "]" {
-        return contenido;
-    }
+clase 
+    = "[" @(rango / contenido)+ "]" 
 
 // Regla para validar un rango como [A-Z]
 rango
-    = inicio:$caracter "-" fin:$caracter {
-        return new  n.rango(inicio, fin);
+    = bottom:$caracter "-" top:$caracter {
+        return new  n.Rango(bottom, top);
     }
 
 // Regla para caracteres individuales
@@ -100,7 +97,7 @@ caracter
 
 // Coincide con cualquier contenido que no incluya "]"
 contenido
-    = contenido: (corchete / @$texto){
+    = contenido:(corchete / @$texto){
         return new n.literalRango(contenido);
     }
 

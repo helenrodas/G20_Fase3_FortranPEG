@@ -3,6 +3,11 @@ import { parse } from './parser/gramatica.js';
 import Tokenizer from './parser/visitor/Tokenizador.js';
 import { ErrorReglas } from './parser/error.js';
 
+
+
+/** @typedef {import('./parser/visitor/CST.js').Producciones} Produccion*/
+/** @typedef {import('./parser/visitor/Visitor.js').default<string>} Visitor*/
+
 export let ids = [];
 export let usos = [];
 export let errores = [];
@@ -26,6 +31,9 @@ const salida = monaco.editor.create(document.getElementById('salida'), {
 let decorations = [];
 
 // Analizar contenido del editor
+// Analizar contenido del editor
+/** @type {Produccion[]} */
+
 const analizar = () => {
     const entrada = editor.getValue();
     ids.length = 0;
@@ -35,6 +43,7 @@ const analizar = () => {
         const cst = parse(entrada);
         if (errores.length > 0) {
             salida.setValue(`Error: ${errores[0].message}`);
+            cst = null;
             return;
         } else {
            
@@ -53,6 +62,7 @@ const analizar = () => {
 
        
     } catch (e) {
+        cst = null;
         if (e.location === undefined) {
             salida.setValue(`Error: ${e.message}`);
         } else {
