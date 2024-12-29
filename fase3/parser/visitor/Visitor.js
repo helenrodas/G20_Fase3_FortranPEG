@@ -113,4 +113,13 @@ export default class Visitor {
         visitConteo(node){
             throw new Error('Implement in subclass');
         }
+	
+        /**
+         * @abstract
+         * @param {Node} node
+         * @returns {T}
+         */
+        visitVarios(node){
+            throw new Error('Implement in subclass');
+        }
 }

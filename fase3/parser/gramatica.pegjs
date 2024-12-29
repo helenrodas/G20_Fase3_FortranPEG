@@ -44,7 +44,7 @@ expresion
 
 etiqueta = ("@")? _ id:identificador _ ":" (varios)?
 
-varios = ("!"(!".") /"$"/"@"/"&")
+varios = ("!"(!".") /"$"/"@"/"&") 
 
 expresiones
   = id:identificador {

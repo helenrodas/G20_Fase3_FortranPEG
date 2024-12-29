@@ -301,3 +301,26 @@ export class Conteo {
     }
 }
     
+
+/**
+ * @implements {Node}
+ */
+export class Varios {
+    /**
+     *
+     * @param {string} vrs
+     */
+    constructor(vrs) {
+        this.vrs = vrs;
+    }
+
+    /**
+     * @template T
+     * @param {Visitor<T>} visitor
+     * @returns {T}
+     */
+    accept(visitor) {
+        return visitor.visitVarios(this);
+    }
+}
+    
