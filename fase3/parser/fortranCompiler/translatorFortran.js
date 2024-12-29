@@ -74,8 +74,9 @@ export default class FortranTranslator {
         const condition = node.expr.accept(this);
         if (node.label == '!'){
             return `
-                if (.not. (${condition})) then
-                    exit
+                if (${condition}) then
+                    print *, "Error: asercion negativa '${node.expr.val}' encontrada"
+                    call exit(1)
                 end if
             `}
         switch (node.qty) {
