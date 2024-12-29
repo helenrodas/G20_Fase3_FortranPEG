@@ -104,4 +104,13 @@ export default class Visitor {
         visitliteralRango(node){
             throw new Error('Implement in subclass');
         }
+	
+        /**
+         * @abstract
+         * @param {Node} node
+         * @returns {T}
+         */
+        visitConteo(node){
+            throw new Error('Implement in subclass');
+        }
 }

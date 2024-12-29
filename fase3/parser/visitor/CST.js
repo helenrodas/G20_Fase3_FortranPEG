@@ -278,3 +278,28 @@ export class literalRango {
     }
 }
     
+
+/**
+ * @implements {Node}
+ */
+export class Conteo {
+    /**
+     *
+     * @param {Expresion} conteo1
+	 * @param {string} num
+     */
+    constructor(conteo1, num) {
+        this.conteo1 = conteo1;
+		this.num = num;
+    }
+
+    /**
+     * @template T
+     * @param {Visitor<T>} visitor
+     * @returns {T}
+     */
+    accept(visitor) {
+        return visitor.visitConteo(this);
+    }
+}
+    

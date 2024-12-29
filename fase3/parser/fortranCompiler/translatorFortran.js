@@ -16,8 +16,10 @@ export default class FortranTranslator {
         function peg_${node.id}() result(accept)
             logical :: accept
             integer :: i
+            integer :: initialCursor
 
             accept = .false.
+            initialCursor = cursor
             ${node.expr.accept(this)}
             ${
                 node.start
@@ -39,6 +41,7 @@ export default class FortranTranslator {
     visitOpciones(node) {
         const template = `
         do i = 0, ${node.exprs.length}
+            cursor = initialCursor
             select case(i)
                 ${node.exprs
                     .map(
@@ -108,7 +111,10 @@ export default class FortranTranslator {
      * @this {Visitor}
      */
     visitString(node) {
-        return `acceptString('${node.val}')`;
+        
+            return `acceptString('${node.val}', ${node.isCase ? '.true.' : '.false.'})`;
+        
+        
     }
     /**
      * @param {CST.Clase} node
@@ -172,4 +178,14 @@ export default class FortranTranslator {
     visitFin(node) {
         return 'acceptEOF()';
     }
+
+        /**
+     * @param {CST.Conteo} node
+     * @this {Visitor}
+     */
+    visitConteo(node){
+        return `acceptConteo(${node.conteo1.accept(this)}, '${node.num}')`;
+    }
+
+
 }

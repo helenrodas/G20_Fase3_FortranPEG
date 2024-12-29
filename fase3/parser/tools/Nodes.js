@@ -15,7 +15,8 @@ const nodes = {
     Identificador: { id: 'string' },
     Punto: {},
     Fin: {},
-    literalRango: {contenido: 'Expresion'}
+    literalRango: {contenido: 'Expresion'},
+    Conteo: {conteo1: 'Expresion', num: 'string'},
 };
 
 export default nodes;

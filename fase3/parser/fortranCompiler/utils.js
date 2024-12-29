@@ -41,20 +41,70 @@ module parser
 
     ${cst.map((rules) => rules.accept(translator)).join('\n')}
 
-    function acceptString(str) result(accept)
-        character(len=*) :: str
-        logical :: accept
-        integer :: offset
+   function acceptString(str, isCase) result(accept)
+    character(len=*) :: str
+    logical :: accept
+    logical :: isCase
+    integer :: offset
 
-        offset = len(str) - 1
-        if (str /= input(cursor:cursor + offset)) then
+    character(len=len(str)) :: temp_str,strLower,tempLower
+    integer :: i, char_code
+
+    offset = len(str) - 1
+
+
+
+    temp_str = input(cursor:cursor + offset)
+
+    if (isCase) then
+
+        strLower = toLower(str)
+        tempLower =   toLower(input(cursor:cursor + offset))
+        if(strLower /= tempLower) then
             accept = .false.
             expected = str
             return
         end if
-        cursor = cursor + len(str);
-        accept = .true.
-    end function acceptString
+        
+        do i = 1, len(str)
+            char_code = iachar(temp_str(i:i))
+            if (char_code >= iachar('a') .and. char_code <= iachar('z')) then
+                temp_str(i:i) = achar(char_code - 32)  ! Convertir a mayúscula
+            end if
+        end do
+
+        
+        if (str == temp_str) then
+            accept = .true.
+            !cursor = cursor + len(str)
+            return
+        end if
+    else
+        ! Comparación sensible a mayúsculas/minúsculas
+        if (str /= temp_str) then
+            accept = .false.
+            expected = str
+            return
+        end if
+    end if
+
+    ! Si pasaron las condiciones
+    cursor = cursor + len(str)
+    accept = .true.
+end function acceptString
+
+    function tolower(str) result(lower_str)
+        character(len=*), intent(in) :: str
+        character(len=len(str)) :: lower_str
+        integer :: i
+
+        lower_str = str 
+        do i = 1, len(str)
+            if (iachar(str(i:i)) >= iachar('A') .and. iachar(str(i:i)) <= iachar('Z')) then
+                lower_str(i:i) = achar(iachar(str(i:i)) + 32)
+            end if
+        end do
+    end function tolower
 
     function acceptRange(bottom, top) result(accept)
         character(len=1) :: bottom, top
