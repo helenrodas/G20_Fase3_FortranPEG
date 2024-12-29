@@ -121,21 +121,42 @@ export default class FortranTranslator {
      * @this {Visitor}
      */
     visitClase(node) {
-        // [abc0-9A-Z]
+        // [abc0-9A-Z] con opción de case-insensitive (isCase)
         let characterClass = [];
+        
+        // Procesar caracteres individuales (literalRango)
         const set = node.chars
             .filter((char) => char instanceof CST.literalRango)
             .map((char) => `'${char.contenido}'`);
+    
+        // Procesar rangos (Rango)
         const ranges = node.chars
             .filter((char) => char instanceof CST.Rango)
-            .map((range) => range.accept(this));
+            .map((range) => {
+                // Verificar si `isCase` está activo para este nodo
+                if (node.isCase) {
+                    return `acceptRangeCaseInsensitive('${range.bottom}', '${range.top}')`;
+                } else {
+                    return `acceptRange('${range.bottom}', '${range.top}')`;
+                }
+            });
+    
+        // Generar llamada a acceptSet si hay caracteres individuales
         if (set.length !== 0) {
-            characterClass = [`acceptSet([${set.join(',')}])`];
+            if (node.isCase) {
+                characterClass = [`acceptSetCaseInsensitive([${set.join(',')}])`];
+            } else {
+                characterClass = [`acceptSet([${set.join(',')}])`];
+            }
         }
+    
+        // Combinar literales y rangos
         if (ranges.length !== 0) {
             characterClass = [...characterClass, ...ranges];
         }
-        return characterClass.join(' .or. '); // acceptSet(['a','b','c']) .or. acceptRange('0','9') .or. acceptRange('A','Z')
+    
+        // Unir todas las condiciones con `.or.` para formar la expresión final
+        return characterClass.join(' .or. '); 
     }
     /**
      * @param {CST.Rango} node

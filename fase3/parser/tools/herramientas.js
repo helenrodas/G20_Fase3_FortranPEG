@@ -29,6 +29,7 @@ export default class Visitor {
         .join('\n\t')}
 }
 `;
+console.log( "Este es dirname",__dirname);
 writeFileSync(path.join(__dirname, visitorDestination), codeString);
 console.log('Generated visitor Interface');
 

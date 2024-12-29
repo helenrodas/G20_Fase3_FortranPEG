@@ -116,6 +116,37 @@ end function acceptString
         accept = .true.
     end function acceptRange
 
+
+    function acceptRangeCaseInsensitive(bottom, top) result(accept)
+        character(len=1) :: bottom, top
+        logical :: accept
+        character(len=1) :: temp_char
+        integer :: char_code
+
+        accept = .false.
+
+        ! Verificar que no se exceda el rango de la entrada
+        if (cursor > len_trim(input)) then
+            return
+        end if
+
+        temp_char = input(cursor:cursor)  ! Extraer el carácter actual
+
+        ! Convertir a minúscula si es mayúscula
+        char_code = iachar(temp_char)
+        if (char_code >= iachar('A') .and. char_code <= iachar('Z')) then
+            temp_char = achar(char_code + 32)  ! Convertir a minúscula
+        end if
+
+        ! Comparar contra el rango
+        if (iachar(temp_char) >= iachar(bottom) .and. iachar(temp_char) <= iachar(top)) then
+            accept = .true.
+            cursor = cursor + 1  ! Avanzar el cursor
+        end if
+    end function acceptRangeCaseInsensitive
+
+
+
     function acceptSet(set) result(accept)
         character(len=1), dimension(:) :: set
         logical :: accept
@@ -127,6 +158,42 @@ end function acceptString
         cursor = cursor + 1
         accept = .true.
     end function acceptSet
+
+    function acceptSetCaseInsensitive(set) result(accept)
+        character(len=1), dimension(:) :: set
+        logical :: accept
+        character(len=1) :: temp_char
+        integer :: char_code, i
+
+        accept = .false.
+
+        ! Verificar que no se exceda el rango de la entrada
+        if (cursor > len_trim(input)) then
+            return
+        end if
+
+        temp_char = input(cursor:cursor)  ! Extraer el carácter actual
+
+        ! Convertir a minúscula si es mayúscula
+        char_code = iachar(temp_char)
+        if (char_code >= iachar('A') .and. char_code <= iachar('Z')) then
+            temp_char = achar(char_code + 32)  ! Convertir a minúscula
+        end if
+
+        ! Verificar si el carácter está en el conjunto
+        do i = 1, size(set)
+            if (temp_char == set(i)) then
+                accept = .true.
+                cursor = cursor + 1  ! Avanzar el cursor
+                temp_char = input(cursor:cursor)
+                !return
+            end if
+
+            cursor = cursor + 1
+            accept = .true.
+        end do
+    end function acceptSetCaseInsensitive
+
 
     function acceptPeriod() result(accept)
         logical :: accept
