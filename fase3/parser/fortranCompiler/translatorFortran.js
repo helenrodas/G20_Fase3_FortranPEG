@@ -72,6 +72,12 @@ export default class FortranTranslator {
      */
     visitExpresion(node) {
         const condition = node.expr.accept(this);
+        if (node.label == '!'){
+            return `
+                if (.not. (${condition})) then
+                    exit
+                end if
+            `}
         switch (node.qty) {
             case '+':
                 return `
