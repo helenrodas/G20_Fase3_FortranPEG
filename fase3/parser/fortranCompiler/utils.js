@@ -52,8 +52,6 @@ module parser
 
     offset = len(str) - 1
 
-
-
     temp_str = input(cursor:cursor + offset)
 
     if (isCase) then

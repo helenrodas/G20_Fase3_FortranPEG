@@ -306,7 +306,7 @@ function peg$parse(input, options) {
   var peg$f9 = function() {
     return new n.Fin();
   };
-  var peg$f10 = function(conteo1) { return new n.Conteo(conteo1, num:"1"); };
+  var peg$f10 = function(conteo1) { return new n.Conteo(conteo1); };
   var peg$f11 = function(bottom, top) {
         return new  n.Rango(bottom, top);
     };

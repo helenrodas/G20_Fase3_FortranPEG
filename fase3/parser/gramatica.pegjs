@@ -70,7 +70,7 @@ expresiones
 
 // conteo = "|" parteconteo _ (_ delimitador )? _ "|"
 
-conteo = "|" _ conteo1:(numero / identificador) _ "|" { return new n.Conteo(conteo1, num:"1"); }
+conteo = "|" _ conteo1:(numero / identificador) _ "|" { return new n.Conteo(conteo1); }
         / "|" _ (numero / id:identificador)? _ ".." _ (numero / id2:identificador)? _ "|"
         / "|" _ (numero / id:identificador)? _ "," _ opciones _ "|"
         / "|" _ (numero / id:identificador)? _ ".." _ (numero / id2:identificador)? _ "," _ opciones _ "|"

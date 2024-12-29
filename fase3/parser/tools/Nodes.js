@@ -16,7 +16,7 @@ const nodes = {
     Punto: {},
     Fin: {},
     literalRango: {contenido: 'Expresion'},
-    Conteo: {conteo1: 'Expresion', num: 'string'},
+    Conteo: {conteo1: 'Expresion'},
 };
 
 export default nodes;

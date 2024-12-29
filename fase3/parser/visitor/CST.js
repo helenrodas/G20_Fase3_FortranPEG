@@ -286,11 +286,9 @@ export class Conteo {
     /**
      *
      * @param {Expresion} conteo1
-	 * @param {string} num
      */
-    constructor(conteo1, num) {
+    constructor(conteo1) {
         this.conteo1 = conteo1;
-		this.num = num;
     }
 
     /**
