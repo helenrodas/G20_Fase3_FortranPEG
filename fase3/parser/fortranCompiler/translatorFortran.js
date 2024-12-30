@@ -104,7 +104,7 @@ export default class FortranTranslator {
                 console.log(minino,maximo);
                 return `
                 conteo = 0
-                    do while (cursor <= len(input))
+                    do j = 0, ${node.qty[1]-1}
                     if (${condition}) then
                         conteo = conteo + 1
                     else
@@ -114,7 +114,8 @@ export default class FortranTranslator {
                 ! Validar que estemos dentro del rango [minimo, maximo]
                 if (conteo >= ${minino} .and. conteo <= ${maximo}) then
                     accept = .true.
-
+                    conteo = 0
+                    return
                 end if
                 cycle`
                 
@@ -122,7 +123,7 @@ export default class FortranTranslator {
             
             return `
                     conteo = 0
-                    do while (cursor <= len(input))
+                    do j= 0, ${node.qty-1}
                         if (${condition}) then
                             conteo = conteo + 1 
                         else
@@ -131,7 +132,8 @@ export default class FortranTranslator {
                     end do
                     if (conteo == ${node.qty}) then
                         accept = .true.  ! Es válido si el conteo es igual a qty_int
-                    
+                        conteo = 0
+                        return
                     end if
                     cycle
                     `;
@@ -159,7 +161,7 @@ export default class FortranTranslator {
             case '?':
                 return `
                 if (.not. (${condition})) then
-                    cycle
+                    contiue
                 end if
                 `;
             default:
