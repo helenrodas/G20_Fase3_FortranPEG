@@ -95,6 +95,31 @@ export default class FortranTranslator {
         // }
         
         if (node.qty !== '+' && node.qty !== '*' && node.qty !== '?' && node.qty !== null) {
+
+            if(node.qty instanceof Array){
+
+                let minino =  node.qty[0]
+                let maximo =  node.qty[1]   
+
+                console.log(minino,maximo);
+                return `
+                conteo = 0
+                    do while (cursor <= len(input))
+                    if (${condition}) then
+                        conteo = conteo + 1
+                    else
+                            exit
+                        end if
+                end do
+                ! Validar que estemos dentro del rango [minimo, maximo]
+                if (conteo >= ${minino} .and. conteo <= ${maximo}) then
+                    accept = .true.
+
+                end if
+                cycle`
+                
+            }
+            
             return `
                     conteo = 0
                     do while (cursor <= len(input))

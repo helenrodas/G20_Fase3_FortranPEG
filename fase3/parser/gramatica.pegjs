@@ -71,7 +71,7 @@ expresiones
 // conteo = "|" parteconteo _ (_ delimitador )? _ "|"
 
 conteo = "|" _ conteo1:$(numero / identificador) _ "|" {return conteo1}
-        / "|" _ (numero / id:identificador)? _ ".." _ (numero / id2:identificador)? _ "|"
+        / "|" _ inicio:$(numero / identificador)? _ ".." _ fin:$(numero / identificador)? _ "|" {return [inicio, fin]}
         / "|" _ (numero / id:identificador)? _ "," _ opciones _ "|"
         / "|" _ (numero / id:identificador)? _ ".." _ (numero / id2:identificador)? _ "," _ opciones _ "|"
 
