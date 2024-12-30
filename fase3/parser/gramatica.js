@@ -306,7 +306,7 @@ function peg$parse(input, options) {
   var peg$f9 = function() {
     return new n.Fin();
   };
-  var peg$f10 = function(conteo1) { return new n.Conteo(conteo1); };
+  var peg$f10 = function(conteo1) {return conteo1};
   var peg$f11 = function(bottom, top) {
         return new  n.Rango(bottom, top);
     };
@@ -739,7 +739,7 @@ function peg$parse(input, options) {
   }
 
   function peg$parseexpresion() {
-    var s0, s1, s2, s3, s4, s5, s6;
+    var s0, s1, s2, s3, s4, s5;
 
     s0 = peg$currPos;
     s1 = peg$currPos;
@@ -755,21 +755,19 @@ function peg$parse(input, options) {
     s3 = peg$parseexpresiones();
     if (s3 !== peg$FAILED) {
       s4 = peg$parse_();
-      s5 = peg$currPos;
-      s6 = input.charAt(peg$currPos);
-      if (peg$r0.test(s6)) {
+      s5 = input.charAt(peg$currPos);
+      if (peg$r0.test(s5)) {
         peg$currPos++;
       } else {
-        s6 = peg$FAILED;
+        s5 = peg$FAILED;
         if (peg$silentFails === 0) { peg$fail(peg$e3); }
       }
-      if (s6 === peg$FAILED) {
-        s6 = peg$parseconteo();
+      if (s5 === peg$FAILED) {
+        s5 = peg$parseconteo();
       }
-      if (s6 === peg$FAILED) {
-        s6 = null;
+      if (s5 === peg$FAILED) {
+        s5 = null;
       }
-      s5 = input.substring(s5, peg$currPos);
       peg$savedPos = s0;
       s0 = peg$f4(s1, s3, s5);
     } else {
@@ -1017,9 +1015,15 @@ function peg$parse(input, options) {
     }
     if (s1 !== peg$FAILED) {
       s2 = peg$parse_();
-      s3 = peg$parsenumero();
-      if (s3 === peg$FAILED) {
-        s3 = peg$parseidentificador();
+      s3 = peg$currPos;
+      s4 = peg$parsenumero();
+      if (s4 === peg$FAILED) {
+        s4 = peg$parseidentificador();
+      }
+      if (s4 !== peg$FAILED) {
+        s3 = input.substring(s3, peg$currPos);
+      } else {
+        s3 = s4;
       }
       if (s3 !== peg$FAILED) {
         s4 = peg$parse_();

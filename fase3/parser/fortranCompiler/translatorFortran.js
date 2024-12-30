@@ -15,7 +15,7 @@ export default class FortranTranslator {
         return `
         function peg_${node.id}() result(accept)
             logical :: accept
-            integer :: i
+            integer :: i,conteo,j
             integer :: initialCursor
 
             accept = .false.
@@ -78,7 +78,40 @@ export default class FortranTranslator {
                     print *, "Error: asercion negativa '${node.expr.val}' encontrada"
                     call exit(1)
                 end if
-            `}
+        `}
+
+        // if(node.qty instanceof CST.Conteo){
+        //     // Si es un string, usamos su valor
+        //     const valor = node.expr.val ;
+
+        //     // return `
+        //     //     if (.not. (${condition})) then
+        //     //         cycle
+        //     //     end if
+        //     //     if (.not. countRepetitions('${valor}', ${node.qty.conteo1}))then
+        //     //         cycle
+        //     //     end if
+        //     // `;
+        // }
+        
+        if (node.qty !== '+' && node.qty !== '*' && node.qty !== '?' && node.qty !== null) {
+            
+            return `
+            conteo = 0
+            do while (.not. cursor > len(input))
+                if (${condition}) then
+                    conteo = conteo + 1 
+                end if
+            end do
+            if (conteo ==  ${node.qty}) then
+                accept = .true.  ! Es válido si el conteo es igual a qty_int
+            else
+                accept = .false.  ! Caso contrario
+                return
+            end if
+
+            `;
+        }
         switch (node.qty) {
             case '+':
                 return `
@@ -211,9 +244,13 @@ export default class FortranTranslator {
      * @param {CST.Conteo} node
      * @this {Visitor}
      */
-    visitConteo(node){
-        return `acceptConteo(${node.conteo1.accept(this)}, '${node.num}')`;
-    }
-
+        visitConteo(node) {
+            // Accedemos a la expresión guardada
+            const valor = this.currentExpression instanceof CST.String ? this.currentExpression.val : 'input(cursor:cursor)';
+            return `if (.not. countRepetitions('${valor}', ${node.conteo1}))then
+                        cycle
+                    end if
+            `;
+        }
 
 }

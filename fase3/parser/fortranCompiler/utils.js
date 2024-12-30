@@ -195,6 +195,35 @@ end function acceptString
     end function acceptSetCaseInsensitive
 
 
+    function countRepetitions(expresion, count) result(accept)
+        character(len=*) :: expresion
+        character(len=:), allocatable :: temp_char
+        integer :: count,conteo
+        logical :: accept
+        integer :: i
+
+        accept = .false.
+        temp_char = input(cursor:cursor) 
+        conteo = 0
+        do i = 1, count
+            if (temp_char== expresion) then
+                cursor = cursor + 1
+                temp_char = input(cursor:cursor)
+                conteo = conteo + 1 
+            end if
+            
+        end do
+        if (conteo == count) then
+            accept = .true.  ! Es válido si el conteo es igual a qty_int
+        else
+            accept = .false.  ! Caso contrario
+            return
+        end if
+
+
+    end function countRepetitions
+
+
     function acceptPeriod() result(accept)
         logical :: accept
 
