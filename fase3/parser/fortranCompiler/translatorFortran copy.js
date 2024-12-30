@@ -167,7 +167,7 @@ export default class FortranTranslator {
         // Procesar caracteres individuales (literalRango)
         const set = node.chars
             .filter((char) => char instanceof CST.literalRango)
-            .map((char) => `'${char.contenido}'`); 
+            .map((char) => `'${char.contenido}'`);
     
         // Procesar rangos (Rango)
         const ranges = node.chars
@@ -180,27 +180,6 @@ export default class FortranTranslator {
                     return `acceptRange('${range.bottom}', '${range.top}')`;
                 }
             });
-
-        //recorre el arreglo set buscando caracteres especiales y agregandolos al arreglo especiales
-        let especiales  = [];
-            for (let i = 0; i < set.length; i++) {
-                console.log(set[i],"0");               
-                
-                if ( String(set[i]) == "'\\n'") {   
-                    console.log("salto");                                     
-                    especiales.push(`acceptString(char(10),.false.)`); // Agregamos al arreglo especiales
-                    set.splice(i, 1); // Eliminamos del arreglo set
-                    i--; // Decrementamos i para no saltar el siguiente elemento
-            
-                }else if (set[i] ==`'\\t'`) {  
-                    console.log("tabular");                                      
-                    especiales.push(`acceptString('    ',.false.)`);// Agregamos al arreglo especiales
-                    set.splice(i, 1); // Eliminamos del arreglo set
-                    i--; // Decrementamos i para no saltar el siguiente elemento
-            
-                }            
-            }
-        
     
         // Generar llamada a acceptSet si hay caracteres individuales
         if (set.length !== 0) {
@@ -209,14 +188,6 @@ export default class FortranTranslator {
             } else {
                 characterClass = [`acceptSet([${set.join(',')}])`];
             }
-        }
-
-        // Combinar literales,rangos y especiales
-        if (especiales.length !== 0) {
-            console.log("juntar especiales");
-            
-            // Copiar elementos de 'especiales' a 'caracteres'
-            characterClass = characterClass.concat(especiales);
         }
     
         // Combinar literales y rangos
