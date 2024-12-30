@@ -95,22 +95,21 @@ export default class FortranTranslator {
         // }
         
         if (node.qty !== '+' && node.qty !== '*' && node.qty !== '?' && node.qty !== null) {
-            
             return `
-            conteo = 0
-            do while (.not. cursor > len(input))
-                if (${condition}) then
-                    conteo = conteo + 1 
-                end if
-            end do
-            if (conteo ==  ${node.qty}) then
-                accept = .true.  ! Es válido si el conteo es igual a qty_int
-            else
-                accept = .false.  ! Caso contrario
-                return
-            end if
-
-            `;
+                    conteo = 0
+                    do while (cursor <= len(input))
+                        if (${condition}) then
+                            conteo = conteo + 1 
+                        else
+                            exit  ! Salir si no hay coincidencia
+                        end if
+                    end do
+                    if (conteo == ${node.qty}) then
+                        accept = .true.  ! Es válido si el conteo es igual a qty_int
+                    
+                    end if
+                    cycle
+                    `;
         }
         switch (node.qty) {
             case '+':
