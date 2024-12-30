@@ -104,7 +104,7 @@ export default class FortranTranslator {
                 console.log(minino,maximo);
                 return `
                 conteo = 0
-                    do j = 0, ${node.qty[1]-1}
+                    do j = 0, ${maximo}
                     if (${condition}) then
                         conteo = conteo + 1
                     else
@@ -123,7 +123,7 @@ export default class FortranTranslator {
             
             return `
                     conteo = 0
-                    do j= 0, ${node.qty-1}
+                    do j= 0, ${node.qty}
                         if (${condition}) then
                             conteo = conteo + 1 
                         else
