@@ -287,7 +287,7 @@ function peg$parse(input, options) {
         errores.push(new ErrorReglas("Regla no encontrada: " + noEncontrados[0]));
     }
     prods[0].start = true;
-    return prods;
+    return new n.Grammar(prods, code);
   };
   var peg$f1 = function(before, after) {
     return after ? {before, after} : {before}
