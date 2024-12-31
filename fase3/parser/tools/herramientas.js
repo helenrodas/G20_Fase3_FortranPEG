@@ -1,4 +1,6 @@
-
+// EN Nodes.js se realizan los nodos que necesitaremos
+//y los autogeneramos ejecutando este achivo: node herramientas.js
+//Los nodos se autogeneraran en la carpeta visitor
 import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 import nodes from './Nodes.js';
