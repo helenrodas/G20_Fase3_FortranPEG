@@ -6,7 +6,7 @@
 }}
 
 gramatica
-  = _ prods:producciones+ _ {
+  = _ code:globalCode? prods:regla+ _ {
     let duplicados = ids.filter((item, index) => ids.indexOf(item) !== index);
     if (duplicados.length > 0) {
         errores.push(new ErrorReglas("Regla duplicada: " + duplicados[0]));
@@ -21,10 +21,15 @@ gramatica
     return prods;
   }
 
-producciones
-  = _ id:identificador _ alias:$(literales)? _ "=" _ expr:opciones (_";")? {
+globalCode
+  = "{" before:$(. !"contains")* [ \t\n\r]* "contains" [ \t\n\r]* after:$[^}]* "}" {
+    return after ? {before, after} : {before}
+  }
+
+regla
+  = _ id:identificador _ alias:(literales)? _ "=" _ expr:opciones (_";")? {
     ids.push(id);
-    return new n.Producciones(id, expr, alias);
+    return new n.Regla(id, expr, alias);
   }
 
 opciones
@@ -33,18 +38,49 @@ opciones
   }
 
 union
-  = expr:expresion rest:(_ @expresion !(_ literales? _ "=") )* {
-    return new n.Union([expr, ...rest]);
+  = expr:parsingExpression rest:(_ @parsingExpression !(_ literales? _ "=") )* action:(_ @predicate)? {
+    const exprs = [expr, ...rest];
+    const labeledExprs = exprs
+        .filter((expr) => expr instanceof n.Pluck)
+        .filter((expr) => expr.labeledExpr.label);
+    if (labeledExprs.length > 0) {
+        action.params = labeledExprs.reduce((args, labeled) => {
+            const expr = labeled.labeledExpr.annotatedExpr.expr;
+            args[labeled.labeledExpr.label] =
+                expr instanceof n.Identificador ? expr.id : '';
+            return args;
+        }, {});
+    }
+    return new n.Union(exprs, action);
   }
 
-expresion
-  = label:$(etiqueta/varios)? _ expr:expresiones _ qty:($[?+*]/conteo)? {
-    return new n.Expresion(expr, label, qty);
+parsingExpression
+  = pluck
+  / '!' assertion:(expresiones/predicate) {
+    return new n.NegAssertion(assertion);
+  }
+  / '&' assertion:(expresiones/predicate) {
+    return new n.Assertion(assertion);
+  }
+  / "!." {
+    return new n.Fin();
   }
 
-etiqueta = ("@")? _ id:identificador _ ":" (varios)?
+pluck
+  = pluck:"@"? _ expr:label {
+    return new n.Pluck(expr, pluck ? true : false);
+  }
 
-varios = ("!"(!".") /"$"/"@"/"&")
+label
+  = label:(@identificador _ ":")? _ expr:annotated {
+    return new n.Label(expr, label);
+  }
+
+annotated
+  = text:"$"? _ expr:expresiones _ qty:([?+*]/conteo)? {
+    return new n.Annotated(expr, qty, text ? true : false);
+  }
+
 
 expresiones
   = id:identificador {
@@ -52,36 +88,35 @@ expresiones
     return new n.Identificador(id);
   }
   / val:$literales isCase:"i"? {
-    return new n.String(val.replace(/['"]/g, ''), isCase);
+    return new n.String(val.replace(/['"]/g, ''), isCase ? true : false);
   }
   / "(" _ @opciones _ ")"
 
   / chars:clase  isCase:"i"?{
-    //console.log("Corchetes", exprs);
-    return new n.Clase(chars, isCase);
+    return new n.Clase(chars, isCase ? true : false);
 
   }
   / "." {
     return new n.Punto();
   }
-  / "!."{
-    return new n.Fin();
-  }
 
-// conteo = "|" parteconteo _ (_ delimitador )? _ "|"
 
-conteo = "|" _ conteo1:$(numero / identificador) _ "|" {return conteo1}
-        / "|" _ inicio:$(numero / identificador)? _ ".." _ fin:$(numero / identificador)? _ "|" {return [inicio, fin]}
+
+conteo = "|" _ conteo1:$(numero / identificador) _ "|" 
+        / "|" _ (numero / id:identificador)? _ ".." _ (numero / id2:identificador)? _ "|"
         / "|" _ (numero / id:identificador)? _ "," _ opciones _ "|"
         / "|" _ (numero / id:identificador)? _ ".." _ (numero / id2:identificador)? _ "," _ opciones _ "|"
 
-// parteconteo = identificador
-//             / [0-9]? _ ".." _ [0-9]?
-// 			/ [0-9]
+predicate
+  = "{" [ \t\n\r]* returnType:predicateReturnType code:$[^}]* "}" {
+    return new n.Predicate(returnType, code, {})
+  }
 
-// delimitador =  "," _ expresion
+predicateReturnType
+  = t:$(. !"::")+ [ \t\n\r]* "::" [ \t\n\r]* "res" {
+    return t.trim();
+  }
 
-// Regla principal que analiza corchetes con contenido
 clase 
     = "[" @(rango / contenido)+ "]" 
 
@@ -137,9 +172,7 @@ escape = "'"
 
 secuenciaFinLinea = "\r\n" / "\n" / "\r" / "\u2028" / "\u2029"
 
-// literales = 
-//     "\"" [^"]* "\""
-//     / "'" [^']* "'"
+
     
 
 numero = [0-9]+
