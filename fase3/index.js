@@ -1,8 +1,8 @@
 import * as monaco from 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/+esm';
 import { parse } from './parser/gramatica.js';
 
-import generateParser from './parser/fortranCompiler/utils.js';
-import { ErrorReglas } from './parser/error.js';
+import {generateParser} from './parser/fortranCompiler/utils.js';
+
 
 
 

@@ -11,7 +11,16 @@ export default class Visitor {
          * @param {Node} node
          * @returns {T}
          */
-        visitProducciones(node){
+        visitGrammar(node){
+            throw new Error('Implement in subclass');
+        }
+	
+        /**
+         * @abstract
+         * @param {Node} node
+         * @returns {T}
+         */
+        visitRegla(node){
             throw new Error('Implement in subclass');
         }
 	
@@ -38,7 +47,52 @@ export default class Visitor {
          * @param {Node} node
          * @returns {T}
          */
-        visitExpresion(node){
+        visitPredicate(node){
+            throw new Error('Implement in subclass');
+        }
+	
+        /**
+         * @abstract
+         * @param {Node} node
+         * @returns {T}
+         */
+        visitPluck(node){
+            throw new Error('Implement in subclass');
+        }
+	
+        /**
+         * @abstract
+         * @param {Node} node
+         * @returns {T}
+         */
+        visitLabel(node){
+            throw new Error('Implement in subclass');
+        }
+	
+        /**
+         * @abstract
+         * @param {Node} node
+         * @returns {T}
+         */
+        visitAnnotated(node){
+            throw new Error('Implement in subclass');
+        }
+	
+        /**
+         * @abstract
+         * @param {Node} node
+         * @returns {T}
+         */
+        visitAssertion(node){
+            throw new Error('Implement in subclass');
+        }
+	
+        /**
+         * @abstract
+         * @param {Node} node
+         * @returns {T}
+         */
+        visitNegAssertion(node){
             throw new Error('Implement in subclass');
         }
 	
@@ -93,24 +147,6 @@ export default class Visitor {
          * @returns {T}
          */
         visitFin(node){
-            throw new Error('Implement in subclass');
-        }
-	
-        /**
-         * @abstract
-         * @param {Node} node
-         * @returns {T}
-         */
-        visitliteralRango(node){
-            throw new Error('Implement in subclass');
-        }
-	
-        /**
-         * @abstract
-         * @param {Node} node
-         * @returns {T}
-         */
-        visitConteo(node){
             throw new Error('Implement in subclass');
         }
 }
