@@ -15,7 +15,7 @@ export const main = (data) => `
 !auto-generated
 module parser
    implicit none
-   character(len=:), allocatable, private :: input
+   character(len=:), allocatable, private :: input,expected
    integer, private :: savePoint, lexemeStart, cursor
 
    interface toStr
@@ -43,19 +43,59 @@ module parser
 
    ${data.actions.join('\n')}
 
-   function acceptString(str) result(accept)
-       character(len=*) :: str
-       logical :: accept
-       integer :: offset
+    function acceptString(str, isCase) result(accept)
+    character(len=*) :: str
+    logical :: accept
+    logical :: isCase
+    integer :: offset
+    character(len=len(str)) :: temp_str,strLower,tempLower
+    integer :: i, char_code
+    offset = len(str) - 1
+    temp_str = input(cursor:cursor + offset)
+    if (isCase) then
 
-       offset = len(str) - 1
-       if (str /= input(cursor:cursor + offset)) then
-           accept = .false.
-           return
-       end if
-       cursor = cursor + len(str)
-       accept = .true.
-   end function acceptString
+        strLower = toLower(str)
+        tempLower =   toLower(input(cursor:cursor + offset))
+        if(strLower /= tempLower) then
+            accept = .false.
+            expected = str
+            return
+    end if
+            do i = 1, len(str)
+            char_code = iachar(temp_str(i:i))
+            if (char_code >= iachar('a') .and. char_code <= iachar('z')) then
+                temp_str(i:i) = achar(char_code - 32)  ! Convertir a mayúscula
+            end if
+        end do
+        
+        if (str == temp_str) then
+            accept = .true.
+            !cursor = cursor + len(str)
+            return
+        end if
+    else
+        ! Comparación sensible a mayúsculas/minúsculas
+        if (str /= temp_str) then
+            accept = .false.
+            expected = str
+            return
+        end if
+    end if
+    ! Si pasaron las condiciones
+    cursor = cursor + len(str)
+    accept = .true.
+end function acceptString
+    function tolower(str) result(lower_str)
+        character(len=*), intent(in) :: str
+        character(len=len(str)) :: lower_str
+        integer :: i
+        lower_str = str 
+        do i = 1, len(str)
+            if (iachar(str(i:i)) >= iachar('A') .and. iachar(str(i:i)) <= iachar('Z')) then
+                lower_str(i:i) = achar(iachar(str(i:i)) + 32)
+            end if
+        end do
+    end function tolower
 
    function acceptRange(bottom, top) result(accept)
        character(len=1) :: bottom, top
@@ -69,6 +109,29 @@ module parser
        accept = .true.
    end function acceptRange
 
+       function acceptRangeCaseInsensitive(bottom, top) result(accept)
+        character(len=1) :: bottom, top
+        logical :: accept
+        character(len=1) :: temp_char
+        integer :: char_code
+        accept = .false.
+        ! Verificar que no se exceda el rango de la entrada
+        if (cursor > len_trim(input)) then
+            return
+        end if
+        temp_char = input(cursor:cursor)  ! Extraer el carácter actual
+        ! Convertir a minúscula si es mayúscula
+        char_code = iachar(temp_char)
+        if (char_code >= iachar('A') .and. char_code <= iachar('Z')) then
+            temp_char = achar(char_code + 32)  ! Convertir a minúscula
+        end if
+        ! Comparar contra el rango
+        if (iachar(temp_char) >= iachar(bottom) .and. iachar(temp_char) <= iachar(top)) then
+            accept = .true.
+            cursor = cursor + 1  ! Avanzar el cursor
+        end if
+    end function acceptRangeCaseInsensitive
+
    function acceptSet(set) result(accept)
        character(len=1), dimension(:) :: set
        logical :: accept
@@ -80,6 +143,35 @@ module parser
        cursor = cursor + 1
        accept = .true.
    end function acceptSet
+
+       function acceptSetCaseInsensitive(set) result(accept)
+        character(len=1), dimension(:) :: set
+        logical :: accept
+        character(len=1) :: temp_char
+        integer :: char_code, i
+        accept = .false.
+        ! Verificar que no se exceda el rango de la entrada
+        if (cursor > len_trim(input)) then
+            return
+        end if
+        temp_char = input(cursor:cursor)  ! Extraer el carácter actual
+        ! Convertir a minúscula si es mayúscula
+        char_code = iachar(temp_char)
+        if (char_code >= iachar('A') .and. char_code <= iachar('Z')) then
+            temp_char = achar(char_code + 32)  ! Convertir a minúscula
+        end if
+        ! Verificar si el carácter está en el conjunto
+        do i = 1, size(set)
+            if (temp_char == set(i)) then
+                accept = .true.
+                cursor = cursor + 1  ! Avanzar el cursor
+                temp_char = input(cursor:cursor)
+                !return
+            end if
+            cursor = cursor + 1
+            accept = .true.
+        end do
+    end function acceptSetCaseInsensitive
 
    function acceptPeriod() result(accept)
        logical :: accept
@@ -271,53 +363,3 @@ export const action = (data) => {
    end function peg_${data.ruleId}_f${data.choice}
    `;
 };
-
-/**
- * @param {{
-*  code: string;
-*  returnType: string;
-*  params: object;
-* }} data
-* @returns {string}
-*/
-export const assertionPredicate = ({ code, returnType, params }) => `
-        ! Guardar posición actual
-        savePoint = cursor
-        
-        ! Ejecutar predicado
-        ${code}
-        
-        if (result) then
-            ! Si el predicado es verdadero, restaurar posición y continuar
-            cursor = savePoint
-        else
-            ! Si el predicado es falso, restaurar posición y fallar
-            cursor = savePoint
-            cycle
-        end if
-`;
-
-
-/**
- * @param {{
-*  expr: string;
-* }} data
-* @returns {string}
-*/
-export const assertionExpression = ({ expr }) => `
-        ! Guardar posición actual
-        savePoint = cursor
-        
-        ! Intentar la expresión
-        if (${expr}) then
-            ! Si la expresión coincide, restaurar posición y continuar
-            cursor = savePoint
-        else
-            ! Si la expresión no coincide, restaurar posición y fallar
-            cursor = savePoint
-            cycle
-        end if
-`;
-
-
-
