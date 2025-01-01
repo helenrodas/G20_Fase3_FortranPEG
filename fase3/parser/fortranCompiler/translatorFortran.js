@@ -209,7 +209,18 @@ export default class FortranTranslator {
      * @this {Visitor}
      */
     visitAssertion(node) {
-        throw new Error('Method not implemented.');
+        if(node.assertion instanceof CST.Predicate){
+            return Template.assertionPredicate({
+                code: node.assertion.code,
+                returnType: node.assertion.returnType,
+                params: node.assertion.params
+            });
+        }else {
+            const translation = node.assertion.accept(this);
+            return Template.assertionExpression({
+                expr: translation
+            });
+        }
     }
 
     /**
