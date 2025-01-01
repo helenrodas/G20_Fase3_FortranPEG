@@ -228,7 +228,22 @@ export default class FortranTranslator {
      * @this {Visitor}
      */
     visitNegAssertion(node) {
-        throw new Error('Method not implemented.');
+        if (node.assertion instanceof CST.String ){
+            const predicate = node.assertion.val; 
+            return `
+            if(acceptString('${predicate}')) then
+                print *, "ERROR: SE ENCONTRO ASERCION NEGATIVA '${predicate}'"
+                call exit(1)
+            end if
+            `;
+        }else if (node.assertion instanceof CST.Identificador ){
+            return `
+        if(peg_${node.assertion.id}()/="") then
+            print *, "ERROR: SE ENCONTRO ASERCION NEGATIVA"
+            call exit(1)
+        end if
+        `;            
+        }
     }
 
     /**
