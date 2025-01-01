@@ -294,29 +294,47 @@ export const union = (data) => `
 * @returns
 */
 export const strExpr = (data) => {
-   if (!data.quantifier) {
-       return `
-               lexemeStart = cursor
-               if(.not. ${data.expr}) cycle
-               ${data.destination} = consumeInput()
-       `;
-   }
-   switch (data.quantifier) {
-       case '+':
-           return `
-               lexemeStart = cursor
-               if (.not. ${data.expr}) cycle
-               do while (.not. cursor > len(input))
-                   if (.not. ${data.expr}) exit
-               end do
-               ${data.destination} = consumeInput()
-           `;
-       default:
-           throw new Error(
-               `'${data.quantifier}' quantifier needs implementation`
-           );
-   }
-};
+    if (!data.quantifier) {
+        return `
+                lexemeStart = cursor
+                if(.not. ${data.expr}) cycle
+                ${data.destination} = consumeInput()
+        `;
+    }
+    switch (data.quantifier) {
+        case '+':
+            return `
+                lexemeStart = cursor
+                if (.not. ${data.expr}) cycle
+                do while (.not. cursor > len(input))
+                    if (.not. ${data.expr}) exit
+                end do
+                ${data.destination} = consumeInput()
+            `;
+        case '*':
+            return `
+                lexemeStart = cursor
+                do while (.not. cursor > len(input))
+                    if (.not. ${data.expr}) exit
+                end do
+                ${data.destination} = consumeInput()
+            `;
+        case '?':  
+            return `
+                lexemeStart = cursor
+                if (${data.expr}) then
+                    ${data.destination} = consumeInput()
+                else
+                    ${data.destination} = ""  ! Aceptar 0 coincidencias
+                end if
+                ${data.destination} = consumeInput()
+            `;
+        default:
+            throw new Error(
+                `'${data.quantifier}' quantifier needs implementation`
+            );
+    }
+ };
 
 /**
 *
