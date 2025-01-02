@@ -228,21 +228,18 @@ export default class FortranTranslator {
      * @this {Visitor}
      */
     visitNegAssertion(node) {
-        if (node.assertion instanceof CST.String ){
-            const predicate = node.assertion.val; 
-            return `
-            if(acceptString('${predicate}')) then
-                print *, "ERROR: SE ENCONTRO ASERCION NEGATIVA '${predicate}'"
-                call exit(1)
-            end if
-            `;
-        }else if (node.assertion instanceof CST.Identificador ){
+        if (node.assertion instanceof CST.Predicate ){
             return `
         if(peg_${node.assertion.id}()/="") then
             print *, "ERROR: SE ENCONTRO ASERCION NEGATIVA"
             call exit(1)
         end if
         `;            
+        } else{
+            const translation = node.assertion.accept(this);
+            return Template.assertionNegExpression({
+                expr: translation
+            });
         }
     }
 

@@ -420,19 +420,32 @@ export const assertionPredicate = ({ code, returnType, params }) => `
 * @returns {string}
 */
 export const assertionExpression = ({ expr }) => `
-      ! Guardar posición actual
-      savePoint = cursor
-      
-      ! Intentar la expresión
-      if (${expr}) then
-          ! Si la expresión coincide, restaurar posición y continuar
-          cursor = savePoint
-      else
-          ! Si la expresión no coincide, restaurar posición y fallar
-          cursor = savePoint
-          cycle
-      end if
+        ! Guardar posición actual
+        savePoint = cursor
+        
+        ! Intentar la expresión
+        if (${expr}) then
+            ! Si la expresión coincide, restaurar posición y continuar
+            
+        else
+            ! Si la expresión no coincide, restaurar posición y fallar
+            cursor = savePoint
+            cycle
+        end if
 `;
+
+/**
+* @param {{
+    *  expr: string;
+    * }} data
+    * @returns {string}
+    */
+    export const assertionNegExpression = ({ expr }) => `
+            if(${expr}) then
+                print *, "ERROR: SE ENCONTRO ASERCION NEGATIVA"
+                call exit(1)
+            end if
+    `;
 
 
 
