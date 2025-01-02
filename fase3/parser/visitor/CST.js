@@ -405,3 +405,26 @@ export class Fin {
     }
 }
     
+
+/**
+ * @implements {Node}
+ */
+export class literalRango {
+    /**
+     *
+     * @param {string} contenido
+     */
+    constructor(contenido) {
+        this.contenido = contenido;
+    }
+
+    /**
+     * @template T
+     * @param {Visitor<T>} visitor
+     * @returns {T}
+     */
+    accept(visitor) {
+        return visitor.visitliteralRango(this);
+    }
+}
+    

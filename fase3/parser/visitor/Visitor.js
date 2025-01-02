@@ -149,4 +149,13 @@ export default class Visitor {
         visitFin(node){
             throw new Error('Implement in subclass');
         }
+	
+        /**
+         * @abstract
+         * @param {Node} node
+         * @returns {T}
+         */
+        visitliteralRango(node){
+            throw new Error('Implement in subclass');
+        }
 }

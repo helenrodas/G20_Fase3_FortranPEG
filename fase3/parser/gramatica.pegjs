@@ -92,7 +92,7 @@ expresiones
   }
   / "(" _ @opciones _ ")"
 
-  / chars:clase  isCase:"i"?{
+  / chars:clase  isCase:"i"?{ debugger;
     return new n.Clase(chars, isCase ? true : false);
 
   }
