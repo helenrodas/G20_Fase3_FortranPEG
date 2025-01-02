@@ -262,7 +262,7 @@ export const election = (data) => `
                ${expr}
                exit
            `
-           )}
+           ).join('\n')}
            case default
                call pegError()
            end select
