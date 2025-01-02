@@ -381,3 +381,103 @@ export const action = (data) => {
    end function peg_${data.ruleId}_f${data.choice}
    `;
 };
+
+
+
+
+
+
+
+/**
+ * @param {{
+*  code: string;
+*  returnType: string;
+*  params: object;
+* }} data
+* @returns {string}
+*/
+export const assertionPredicate = ({ code, returnType, params }) => `
+      ! Guardar posición actual
+      savePoint = cursor
+      
+      ! Ejecutar predicado
+      ${code}
+      
+      if (result) then
+          ! Si el predicado es verdadero, restaurar posición y continuar
+          cursor = savePoint
+      else
+          ! Si el predicado es falso, restaurar posición y fallar
+          cursor = savePoint
+          cycle
+      end if
+`;
+
+/**
+* @param {{
+*  expr: string;
+* }} data
+* @returns {string}
+*/
+export const assertionExpression = ({ expr }) => `
+      ! Guardar posición actual
+      savePoint = cursor
+      
+      ! Intentar la expresión
+      if (${expr}) then
+          ! Si la expresión coincide, restaurar posición y continuar
+          cursor = savePoint
+      else
+          ! Si la expresión no coincide, restaurar posición y fallar
+          cursor = savePoint
+          cycle
+      end if
+`;
+
+
+
+// /**
+//  * @param {{
+// *  code: string;
+// *  returnType: string;
+// *  params: object;
+// * }} data
+// * @returns {string}
+// */
+// export const negAssertionPredicate = ({ code, returnType, params }) => `
+//       ! Guardar posición actual
+//       savePoint = cursor
+      
+//       ! Ejecutar predicado
+//       ${code}
+      
+//       if (.not. result) then
+//           ! Si el predicado es falso, restaurar posición y continuar
+//           cursor = savePoint
+//       else
+//           ! Si el predicado es verdadero, restaurar posición y fallar
+//           cursor = savePoint
+//           cycle
+//       end if
+// `;
+
+// /**
+// * @param {{
+// *  expr: string;
+// * }} data
+// * @returns {string}
+// */
+// export const negAssertionExpression = ({ expr }) => `
+//       ! Guardar posición actual
+//       savePoint = cursor
+      
+//       ! Intentar la expresión
+//       if (.not. ${expr}) then
+//           ! Si la expresión no coincide, restaurar posición y continuar
+//           cursor = savePoint
+//       else
+//           ! Si la expresión coincide, restaurar posición y fallar
+//           cursor = savePoint
+//           cycle
+//       end if
+// `;
