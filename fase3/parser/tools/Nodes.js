@@ -33,6 +33,7 @@ const nodes = {
     Identificador: { id: 'string' },
     Punto: {},
     Fin: {},
+    literalRango: {contenido: 'string'}
 };
 
 export default nodes;
