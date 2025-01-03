@@ -1417,7 +1417,13 @@ function peg$parse(input, options) {
           }
           if (s5 !== peg$FAILED) {
             s6 = peg$parse_();
-            s7 = peg$parseopciones();
+            s7 = peg$currPos;
+            s8 = peg$parseopciones();
+            if (s8 !== peg$FAILED) {
+              s7 = input.substring(s7, peg$currPos);
+            } else {
+              s7 = s8;
+            }
             if (s7 !== peg$FAILED) {
               s8 = peg$parse_();
               if (input.charCodeAt(peg$currPos) === 124) {
@@ -1495,7 +1501,13 @@ function peg$parse(input, options) {
               }
               if (s9 !== peg$FAILED) {
                 s10 = peg$parse_();
-                s11 = peg$parseopciones();
+                s11 = peg$currPos;
+                s12 = peg$parseopciones();
+                if (s12 !== peg$FAILED) {
+                  s11 = input.substring(s11, peg$currPos);
+                } else {
+                  s11 = s12;
+                }
                 if (s11 !== peg$FAILED) {
                   s12 = peg$parse_();
                   if (input.charCodeAt(peg$currPos) === 124) {
