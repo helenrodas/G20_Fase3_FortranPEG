@@ -236,6 +236,33 @@ export default class FortranTranslator {
                             end if
                             cycle`
                             break;
+
+                        case "conteo2":
+                            const minVal = node.qty.value[0]; // Valor mínimo
+                            const delimiterval = node.qty.value[1].replace(/['"]/g, ''); // Delimitador
+                            
+        
+                            return `
+                            conteo = 0
+                                
+                                if (${node.expr.accept(this)}) conteo = conteo + 1
+                                do j = 0, ${minVal}
+                                    if (.not. acceptString('${delimiterval}', .false.)) exit
+                                    if (${node.expr.accept(this)}) then
+                                        conteo = conteo + 1
+                                        else
+                                            exit  ! Salir si no hay coincidencia
+                                        end if
+                                    end do
+                                ! Verificar si necesitamos un delimitador
+                                if (conteo == ${minVal}) then
+                                    res = consumeInput()  ! Es válido si el conteo es igual a qty_int
+                                    conteo = 0
+                                    return
+                                end if
+                                cycle
+                            `;
+                        
                         case "conteo3":
 
                             const min = node.qty.value[0]; // Valor mínimo
