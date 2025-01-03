@@ -339,7 +339,7 @@ function peg$parse(input, options) {
   var peg$f12 = function(val, isCase) {
     return new n.String(val.replace(/['"]/g, ''), isCase ? true : false);
   };
-  var peg$f13 = function(chars, isCase) {
+  var peg$f13 = function(chars, isCase) { debugger;
     return new n.Clase(chars, isCase ? true : false);
 
   };
@@ -991,7 +991,7 @@ function peg$parse(input, options) {
         if (peg$silentFails === 0) { peg$fail(peg$e9); }
       }
       if (s1 !== peg$FAILED) {
-        s2 = peg$parseexpresiones();
+        s2 = peg$parseannotated();
         if (s2 === peg$FAILED) {
           s2 = peg$parsepredicate();
         }
@@ -1016,7 +1016,7 @@ function peg$parse(input, options) {
           if (peg$silentFails === 0) { peg$fail(peg$e10); }
         }
         if (s1 !== peg$FAILED) {
-          s2 = peg$parseexpresiones();
+          s2 = peg$parseannotated();
           if (s2 === peg$FAILED) {
             s2 = peg$parsepredicate();
           }
