@@ -187,9 +187,66 @@ export default class FortranTranslator {
                 expr: node.expr.accept(this),
                 destination: getExprId(this.currentChoice, this.currentExpr),
             });
-        } else if (node.qty) {
-            // TODO: Implement repetitions (e.g., |3|, |1..3|, etc...)
-            throw new Error('Repetitions not implemented.');
+        } else if (node.qty !== '+' && node.qty !== '*' && node.qty !== '?' && node.qty !== null) {
+                if(node.qty instanceof Object){
+
+
+                    switch (node.qty.type) {
+
+                        case "conteo":
+                            return `
+                            conteo = 0
+                            do j= 0, ${node.qty.value}
+                                if (${node.expr.accept(this)}) then
+                                    conteo = conteo + 1 
+                                else
+                                    exit  ! Salir si no hay coincidencia
+                                end if
+                            end do
+                            if (conteo == ${node.qty.value}) then
+                                res = consumeInput()  ! Es válido si el conteo es igual a qty_int
+                                conteo = 0
+                                return
+                            end if
+                            cycle
+                            `;
+                            break;
+                        case "conteo1":
+                            let minino =  node.qty.value[0]
+                            let maximo =  node.qty.value[1]  
+
+                            console.log(minino,maximo);
+                            return `
+                            conteo = 0
+                                do j = 0, ${maximo}
+                                if (${node.expr.accept(this)}) then
+                                    conteo = conteo + 1
+                                else
+                                    exit
+
+                                end if
+
+                            end do
+
+                            ! Validar que estemos dentro del rango [minimo, maximo]
+                            if (conteo >= ${minino} .and. conteo <= ${maximo}) then
+                                res = consumeInput() 
+                                conteo = 0
+                                return
+                            end if
+                            cycle`
+                            break;
+                        default:
+                            break;
+
+
+                    }
+
+
+                    
+
+                }
+            
         } else {
             if (node.expr instanceof CST.Identificador) {
                 return `${getExprId(
@@ -376,5 +433,15 @@ export default class FortranTranslator {
      */
      visitliteralRango(node) {
         return node.contenido.accept(this);
+    }
+
+
+
+         /**
+     * @param {CST.visitAgrupacion} node
+     * @this {Visitor}
+     */
+    visitAgrupacion(node){
+
     }
 }

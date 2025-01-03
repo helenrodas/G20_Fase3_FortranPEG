@@ -16,7 +16,7 @@ export const main = (data) => `
 module parser
    implicit none
    character(len=:), allocatable, private :: input,expected
-   integer, private :: savePoint, lexemeStart, cursor
+   integer, private :: savePoint, lexemeStart, cursor,j,conteo
 
    interface toStr
        module procedure intToStr
