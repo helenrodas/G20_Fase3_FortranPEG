@@ -368,7 +368,13 @@ export default class FortranTranslator {
                  set.splice(i, 1); // Eliminamos del arreglo set
                  i--; // Decrementamos i para no saltar el siguiente elemento
          
-             }            
+             }else if (set[i] ==`'\\r'`) {  
+                console.log("tabular");                                      
+                especiales.push(`acceptString(achar(13),.false.)`);// Agregamos al arreglo especiales
+                set.splice(i, 1); // Eliminamos del arreglo set
+                i--; // Decrementamos i para no saltar el siguiente elemento
+        
+            }            
          }
             
             if (set.length !== 0) {
