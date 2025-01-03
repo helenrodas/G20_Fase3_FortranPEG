@@ -194,33 +194,44 @@ export default class FortranTranslator {
                     switch (node.qty.type) {
 
                         case "conteo":
+                            if(node.qty.value instanceof CST.Predicate){
+                                return `print *, "funcion no implementada"`
+                            }else{
+
+                            
                             return `
-                            conteo = 0
+                            rep = 0
                             do j= 0, ${node.qty.value}
                                 if (${node.expr.accept(this)}) then
-                                    conteo = conteo + 1 
+                                    rep = rep + 1 
                                 else
                                     exit  ! Salir si no hay coincidencia
                                 end if
                             end do
-                            if (conteo == ${node.qty.value}) then
+                            if (rep == ${node.qty.value}) then
                                 res = consumeInput()  ! Es válido si el conteo es igual a qty_int
-                                conteo = 0
+                                rep = 0
                                 return
                             end if
                             cycle
                             `;
+                        }
                             break;
                         case "conteo1":
                             let minino =  node.qty.value[0]
-                            let maximo =  node.qty.value[1]  
+                            let maximo =  node.qty.value[1] 
+                            
+                            if(minino instanceof CST.Predicate && maximo instanceof CST.Predicate){
+                                return `print *, "funcion no implementada"`
 
-                            console.log(minino,maximo);
+                            }else{
+
+                            
                             return `
-                            conteo = 0
+                            rep = 0
                                 do j = 0, ${maximo}
                                 if (${node.expr.accept(this)}) then
-                                    conteo = conteo + 1
+                                    rep = rep + 1
                                 else
                                     exit
 
@@ -229,69 +240,83 @@ export default class FortranTranslator {
                             end do
 
                             ! Validar que estemos dentro del rango [minimo, maximo]
-                            if (conteo >= ${minino} .and. conteo <= ${maximo}) then
+                            if (rep >= ${minino} .and. rep <= ${maximo}) then
                                 res = consumeInput() 
-                                conteo = 0
+                                rep = 0
                                 return
                             end if
                             cycle`
+                        }
                             break;
 
                         case "conteo2":
                             const minVal = node.qty.value[0]; // Valor mínimo
                             const delimiterval = node.qty.value[1].replace(/['"]/g, ''); // Delimitador
+
+
+                            if(minVal instanceof CST.Predicate){
+                                return `print *, "funcion no implementada"`
+                            }else{
                             
         
                             return `
-                            conteo = 0
+                            rep = 0
                                 
-                                if (${node.expr.accept(this)}) conteo = conteo + 1
+                                if (${node.expr.accept(this)}) rep = rep + 1
                                 do j = 0, ${minVal}
                                     if (.not. acceptString('${delimiterval}', .false.)) exit
                                     if (${node.expr.accept(this)}) then
-                                        conteo = conteo + 1
+                                        rep = rep + 1
                                         else
                                             exit  ! Salir si no hay coincidencia
                                         end if
                                     end do
                                 ! Verificar si necesitamos un delimitador
-                                if (conteo == ${minVal}) then
+                                if (rep == ${minVal}) then
                                     res = consumeInput()  ! Es válido si el conteo es igual a qty_int
-                                    conteo = 0
+                                    rep = 0
                                     return
                                 end if
                                 cycle
                             `;
+                            }
+                            break;
                         
                         case "conteo3":
 
                             const min = node.qty.value[0]; // Valor mínimo
                             const max = node.qty.value[1]; // Valor máximo
                             const delimiter = node.qty.value[2].replace(/['"]/g, ''); // Delimitador
+
+                            if(min instanceof CST.Predicate && max instanceof CST.Predicate){
+                                return `print *, "funcion no implementada"`
+
+                            }else{
                             
         
                             return `
-                            conteo = 0
+                            rep = 0
     
                             
                                 
-                                if (${node.expr.accept(this)}) conteo = conteo + 1
+                                if (${node.expr.accept(this)}) rep = rep + 1
                                 do j = 0, ${max}
                                     if (.not. acceptString('${delimiter}', .false.)) exit
                                     if (${node.expr.accept(this)}) then
-                                        conteo = conteo + 1
+                                        rep = rep + 1
                                         else
                                             exit  ! Salir si no hay coincidencia
                                         end if
                                     end do
                                 ! Verificar si necesitamos un delimitador
-                                if (conteo >= ${min} .and. conteo <= ${max}) then
+                                if (rep >= ${min} .and. rep <= ${max}) then
                                     res = consumeInput()  ! Es válido si el conteo es igual a qty_int
-                                    conteo = 0
+                                    rep = 0
                                     return
                                 end if
                                 cycle
                             `;
+                            }
                         
                         default:
                             break;
@@ -324,11 +349,7 @@ export default class FortranTranslator {
      */
     visitAssertion(node) {
         if(node.assertion instanceof CST.Predicate){
-            return Template.assertionPredicate({
-                code: node.assertion.code,
-                returnType: node.assertion.returnType,
-                params: node.assertion.params
-            });
+            return `print *, "funcion no implementada"` ;
         }else {
             const translation = node.assertion.accept(this);
             return Template.assertionExpression({
@@ -343,12 +364,8 @@ export default class FortranTranslator {
      */
     visitNegAssertion(node) {
         if (node.assertion instanceof CST.Predicate ){
-            return `
-        if(peg_${node.assertion.id}()/="") then
-            print *, "ERROR: SE ENCONTRO ASERCION NEGATIVA"
-            call exit(1)
-        end if
-        `;            
+            return `print *, "funcion no implementada"`
+            ;            
         } else{
             const translation = node.assertion.accept(this);
             return Template.assertionNegExpression({

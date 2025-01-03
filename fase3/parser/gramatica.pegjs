@@ -52,7 +52,7 @@ union
             return args;
         }, {});}
     }
-    debugger;return new n.Union(exprs, action);
+    return new n.Union(exprs, action);
   }
 
 parsingExpression
@@ -93,7 +93,7 @@ expresiones
   }
   / "(" _ @opciones _ ")" 
 
-  / chars:clase  isCase:"i"?{ debugger;
+  / chars:clase  isCase:"i"?{ 
     return new n.Clase(chars, isCase ? true : false);
 
   }
@@ -103,10 +103,10 @@ expresiones
 
 
 
-conteo = "|" _ conteo1:$(numero / identificador/predicate) _ "|"    {return {type: "conteo", value: conteo1}}
-        / "|" _ dato1:$(numero / id:identificador/predicate )? _ ".." _ dato2:$(numero / id2:identificador/predicate)? _ "|" {return  {type: "conteo1" , value: [dato1, dato2]}}
-        / "|" _ dato1:$(numero / id:identificador/predicate )? _ "," _ op:$opciones _ "|"  {return {type: "conteo2", value: [dato1, op]}}
-        / "|" _ dato1:$(numero / id:identificador/predicate )? _ ".." _ dato2:$(numero / id2:identificador/predicate)? _ "," _ op:$opciones _ "|" {return {type: "conteo3", value: [dato1, dato2, op]}}
+conteo = "|" _ conteo1:($numero / $identificador/predicate) _ "|"    {return {type: "conteo", value: conteo1}}
+        / "|" _ dato1:($numero / $identificador/predicate )? _ ".." _ dato2:($numero / $identificador/predicate)? _ "|" {return  {type: "conteo1" , value: [dato1, dato2]}}
+        / "|" _ dato1:($numero / $identificador/predicate )? _ "," _ op:$opciones _ "|"  {return {type: "conteo2", value: [dato1, op]}}
+        / "|" _ dato1:($numero / $identificador/predicate )? _ ".." _ dato2:($numero / $identificador/predicate)? _ "," _ op:$opciones _ "|" {return {type: "conteo3", value: [dato1, dato2, op]}}
 
 predicate
   = "{" [ \t\n\r]* returnType:predicateReturnType code:$[^}]* "}" {
