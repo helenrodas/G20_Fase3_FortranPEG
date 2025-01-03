@@ -287,6 +287,36 @@ export const union = (data) => `
 /**
 *
 * @param {{
+    *  expr: string;
+    *  destination: string
+    *  quantifier?: string;
+    * }} data
+    * @returns
+    */
+export const strNonTerminal = (data) => {
+    if (!data.quantifier) {
+        return `
+                lexemeStart = cursor
+                if(.not. ${data.expr}) cycle
+                ${data.destination} = consumeInput()
+        `;
+    }
+    switch (data.quantifier) {
+        case '+':
+            return `
+                ${data.destination} = ${data.expr}
+                do while (.not. cursor > len(input))
+                   ${data.destination} = ${data.destination} // ${data.expr}
+                end do
+            `;
+        default:
+            return 'print *, "Cuantificador no implementado"';
+        
+    }
+ };
+/**
+*
+* @param {{
 *  expr: string;
 *  destination: string
 *  quantifier?: string;

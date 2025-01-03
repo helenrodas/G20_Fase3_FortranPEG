@@ -175,12 +175,14 @@ export default class FortranTranslator {
      */
     visitAnnotated(node) {
         if (node.qty && typeof node.qty === 'string') {
+           
             if (node.expr instanceof CST.Identificador) {
-                // TODO: Implement quantifiers (i.e., ?, *, +)
-                return `${getExprId(
-                    this.currentChoice,
-                    this.currentExpr
-                )} = ${node.expr.accept(this)}`;
+
+                return Template.strNonTerminal({
+                    quantifier: node.qty,
+                    expr: node.expr.accept(this),
+                    destination: getExprId(this.currentChoice, this.currentExpr),
+                });
             }
             return Template.strExpr({
                 quantifier: node.qty,
