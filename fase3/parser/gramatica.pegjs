@@ -44,14 +44,15 @@ union
         .filter((expr) => expr instanceof n.Pluck)
         .filter((expr) => expr.labeledExpr.label);
     if (labeledExprs.length > 0) {
+        if(action != null){
         action.params = labeledExprs.reduce((args, labeled) => {
             const expr = labeled.labeledExpr.annotatedExpr.expr;
             args[labeled.labeledExpr.label] =
                 expr instanceof n.Identificador ? expr.id : '';
             return args;
-        }, {});
+        }, {});}
     }
-    return new n.Union(exprs, action);
+    debugger;return new n.Union(exprs, action);
   }
 
 parsingExpression
@@ -90,7 +91,7 @@ expresiones
   / val:$literales isCase:"i"? {
     return new n.String(val.replace(/['"]/g, ''), isCase ? true : false);
   }
-  / "(" _ @opciones _ ")"
+  / "(" _ @opciones _ ")" 
 
   / chars:clase  isCase:"i"?{ debugger;
     return new n.Clase(chars, isCase ? true : false);
@@ -102,15 +103,16 @@ expresiones
 
 
 
-conteo = "|" _ conteo1:$(numero / identificador) _ "|"    {return {type: "conteo", value: conteo1}}
-        / "|" _ dato1:$(numero / id:identificador)? _ ".." _ dato2:$(numero / id2:identificador)? _ "|" {return  {type: "conteo1" , value: [dato1, dato2]}}
-        / "|" _ dato1:$(numero / id:identificador)? _ "," _ op:$opciones _ "|"  {return {type: "conteo2", value: [dato1, op]}}
-        / "|" _ dato1:$(numero / id:identificador)? _ ".." _ dato2:$(numero / id2:identificador)? _ "," _ op:$opciones _ "|" {return {type: "conteo3", value: [dato1, dato2, op]}}
+conteo = "|" _ conteo1:$(numero / identificador/predicate) _ "|"    {return {type: "conteo", value: conteo1}}
+        / "|" _ dato1:$(numero / id:identificador/predicate )? _ ".." _ dato2:$(numero / id2:identificador/predicate)? _ "|" {return  {type: "conteo1" , value: [dato1, dato2]}}
+        / "|" _ dato1:$(numero / id:identificador/predicate )? _ "," _ op:$opciones _ "|"  {return {type: "conteo2", value: [dato1, op]}}
+        / "|" _ dato1:$(numero / id:identificador/predicate )? _ ".." _ dato2:$(numero / id2:identificador/predicate)? _ "," _ op:$opciones _ "|" {return {type: "conteo3", value: [dato1, dato2, op]}}
 
 predicate
   = "{" [ \t\n\r]* returnType:predicateReturnType code:$[^}]* "}" {
-    return new n.Predicate(returnType, code, {})
-  }
+    return new n.Predicate(returnType, code, {}) }
+
+
 
 predicateReturnType
   = t:$(. !"::")+ [ \t\n\r]* "::" [ \t\n\r]* "res" {
